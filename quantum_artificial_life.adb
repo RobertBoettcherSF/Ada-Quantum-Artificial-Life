@@ -125,16 +125,18 @@ package body Quantum_Artificial_Life is
                Cell : Cell_T renames Grid (R, C);
             begin
                -- 1. Process lifespan decay for cell occupants
-               for I in 1 .. Cell.Count loop
-                  if Cell.Occupants(I).Active then
-                     Process_Lifespan (Cell.Occupants(I));
-                  end if;
-               end loop;
+               if Cell.Count > 0 then
+                  for I in 1 .. Cell_Index_T (Cell.Count) loop
+                     if Cell.Occupants(I).Active then
+                        Process_Lifespan (Cell.Occupants(I));
+                     end if;
+                  end loop;
+               end if;
 
                -- 2. Trigger cell interactions if multiple individuals occupy the cell
                if Cell.Count >= 2 then
-                  for I in 1 .. Cell.Count - 1 loop
-                     for J in I + 1 .. Cell.Count loop
+                  for I in 1 .. Cell_Index_T (Cell.Count) - 1 loop
+                     for J in I + 1 .. Cell_Index_T (Cell.Count) loop
                         if Cell.Occupants(I).Active and Cell.Occupants(J).Active then
                            Intercept_And_Interact (Cell.Occupants(I), Cell.Occupants(J));
                         end if;
@@ -154,11 +156,13 @@ package body Quantum_Artificial_Life is
    begin
       for R in Coordinate_T loop
          for C in Coordinate_T loop
-            for I in 1 .. Grid(R, C).Count loop
-               if Grid(R, C).Occupants(I).Active then
-                  Total := Total + 1;
-               end if;
-            end loop;
+            if Grid(R, C).Count > 0 then
+               for I in 1 .. Cell_Index_T (Grid(R, C).Count) loop
+                  if Grid(R, C).Occupants(I).Active then
+                     Total := Total + 1;
+                  end if;
+               end loop;
+            end if;
          end loop;
       end loop;
       return Total;
